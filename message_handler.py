@@ -7,12 +7,12 @@ import parse
 logger = conf.logger
 
 
-def result_response(elem, full_name_filter=None, date_filter=None):
+def result_response(elem, full_name_filter, dates_filter):
     """
     Function describes what to do with the found element in xml
     :param elem: person tag found
     :param full_name_filter: full name of person for filtering
-    :param date_filter: work date for filtering
+    :param dates_filter: work date for filtering
     """
     # parsed_info
     full_name, start_date, start_time, end_date, end_time = parse.parse_person_tag(elem)
@@ -20,25 +20,26 @@ def result_response(elem, full_name_filter=None, date_filter=None):
     if full_name_filter and full_name != full_name_filter:
         # if filter by full name is not equal to parsed info
         return
-    if date_filter:
-        start_date_filter, end_date_filter = date_filter
+    if dates_filter:
+        start_date_filter, end_date_filter = dates_filter
         if start_date < start_date_filter or end_date > end_date_filter:
             # if filter by date name is not equal to parsed info
             return
-    timedelta = end_time - start_time
+    timedelta = subtract_time(start_date, start_time, end_date, end_time)
+    time_delta_str = f"{str(timedelta.seconds//3600)} hours and {(timedelta.seconds//60)%60} minutes"
     # give info to user
     logger.info(f'full_name: {full_name}')
     logger.info(f'date: {str(start_date)}')
-    logger.info(f'time at work: {str(timedelta)}')
+    logger.info(f'time at work: {time_delta_str}\n')
 
 
-def error_message(err: str):
-    logger.error('Something went wrong! {}'.format(err))
+def subtract_time(start_date, start_time, end_date, end_time):
+    return datetime.datetime.combine(end_date, end_time) - datetime.datetime.combine(start_date, start_time)
 
 
 def date_is_valid(date_text) -> bool:
     try:
-        datetime.datetime.strptime(date_text, '%d-%m-%Y')
+        datetime.datetime.strptime(date_text, "%d-%m-%Y")
         return True
     except ValueError:
         return False
@@ -73,7 +74,7 @@ class MessageHandler:
         # full name of person to filter
         self.full_name_filter = None
         # start date and end date to filter work date of person
-        self.date_filter = None
+        self.dates_filter = None
         # start dialogue with user
         self.generate_message()
 
@@ -113,7 +114,7 @@ class MessageHandler:
             self.state = conf.SEND_FILE
         else:
             # file does not exist, report it to user
-            error_message('File does not exist. Try again?')
+            logger.error('File does not exist. Try again?')
             logger.info("1: Try again")
             logger.info("*ANY KEY*: Exit")
 
@@ -150,14 +151,14 @@ class MessageHandler:
 
             logger.info('Write the end work date of person to filter in format DD-MM-YYYY')
             end_date_filter = input().strip()
-            if not date_is_valid(start_date_filter) or not not date_is_valid(end_date_filter):
+            if not date_is_valid(start_date_filter) or not date_is_valid(end_date_filter):
                 # not valid date, try to ask about filtering date again
-                error_message("Incorrect format of date")
+                logger.error("Incorrect format of date")
                 self.state = conf.FILTERED_BY_NAME
             else:
                 # date is valid
-                self.date_filter = (datetime.datetime.strptime(start_date_filter, "%d-%m-%y"),
-                                    datetime.datetime.strptime(end_date_filter, "%d-%m-%y"))
+                self.dates_filter = (datetime.datetime.strptime(start_date_filter, "%d-%m-%Y").date(),
+                                     datetime.datetime.strptime(end_date_filter, "%d-%m-%Y").date())
                 self.state = conf.FILTERED_BY_DATE
         else:
             # at this moment we accept the state as FILTERED_BY_DATE,
@@ -169,8 +170,7 @@ class MessageHandler:
         """
         Function shows result of user response xml
         """
-        self.parser.parse_file(result_response, full_name_filter=self.full_name_filter,
-                               date_filter=self.date_filter)
+        self.parser.parse_file(result_response, self.full_name_filter, self.dates_filter)
 
         logger.info('Do you want to exit or load another file?')
         logger.info('1: Load another file')
