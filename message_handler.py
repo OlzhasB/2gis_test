@@ -33,7 +33,7 @@ def result_response(elem, full_name_filter=None, date_filter=None):
 
 
 def error_message(err: str):
-    logger.error('Something went wrong! %s'.format(err))
+    logger.error('Something went wrong! {}'.format(err))
 
 
 def date_is_valid(date_text) -> bool:

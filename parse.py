@@ -15,7 +15,7 @@ def parse_date_time(date_time_str: str):
     """
     date_str = date_time_str.split(' ')[0]
     time_str = date_time_str.split(' ')[1]
-    return datetime.datetime.strptime(date_str, "%d-%m-%y"), datetime.datetime.strptime(time_str, '%H:%M:%S')
+    return datetime.datetime.strptime(date_str, "%d-%m-%Y"), datetime.datetime.strptime(time_str, '%H:%M:%S')
 
 
 def parse_person_tag(elem) -> tuple:
@@ -25,9 +25,14 @@ def parse_person_tag(elem) -> tuple:
     :return: tuple with parsed full_name, start_date, start_time, end_date and end_time
     """
     full_name = elem.attrib['full_name']
-    start_date_time = elem[0].text.decode('utf-8')
-    end_date_time = elem[1].text.decode('utf-8')
-    return full_name, parse_date_time(start_date_time), parse_date_time(end_date_time)
+    for date_tag in elem:
+        if date_tag.tag == 'start':
+            start_date_time = date_tag.text
+        elif date_tag.tag == 'end':
+            end_date_time = date_tag.text
+    start_date, start_time = parse_date_time(start_date_time)
+    end_date, end_time = parse_date_time(end_date_time)
+    return full_name, start_date, start_time, end_date, end_date_time
 
 
 class XMLPeopleScheduleParser:
