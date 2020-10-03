@@ -1,0 +1,8 @@
+version: '3'
+services:
+  console_app:
+    build: .
+    stdin_open: true
+    tty: true
+    restart: on-failure
+    command: python3 main.py
