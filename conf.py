@@ -1,8 +1,7 @@
 import logging
 
 # Logger configuration
-logging.basicConfig(format='%(levelname)s [%(asctime)s] %(message)s', datefmt='%d/%m/%Y %H:%M:%S',
-                    level=logging.INFO)
+logging.basicConfig(format='[%(levelname)s] %(message)s', level=logging.INFO)
 
 logger = logging.getLogger('analytics')
 

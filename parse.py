@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from lxml import etree
 
@@ -17,6 +18,7 @@ def parse_date_time(date_time_str: str):
     time_str = date_time_str.split(' ')[1]
     return datetime.datetime.strptime(date_str, "%d-%m-%Y").date(), \
            datetime.datetime.strptime(time_str, '%H:%M:%S').time()
+
 
 def parse_person_tag(elem) -> tuple:
     """
@@ -39,12 +41,17 @@ class XMLPeopleScheduleParser:
     """
     Class for parsing xml file with
     """
+
     def __init__(self, path_to_file, tag):
         """
         :param path_to_file: path to xml file
-        :param tag: name of tage user is searching for
+        :param tag: name of tag user is searching for
         """
-        self.path_to_file = path_to_file
+        if os.path.exists(path_to_file):
+            self.path_to_file = path_to_file
+        else:
+            raise FileNotFoundError('File does not exists')
+
         self.tag = tag
 
     def fast_iter(self, context, func, full_name_filter, dates_filter):
@@ -74,4 +81,5 @@ class XMLPeopleScheduleParser:
             context = etree.iterparse(self.path_to_file, events=('end',), tag=self.tag)
             self.fast_iter(context, func, full_name_filter, dates_filter)
         except ValueError:
-            logger.info('Incorrect formatting in file')
+            logger.error("Invalid file formatting")
+            return None

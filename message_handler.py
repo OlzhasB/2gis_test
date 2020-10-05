@@ -23,7 +23,7 @@ def result_response(elem, full_name_filter, dates_filter):
     if dates_filter:
         start_date_filter, end_date_filter = dates_filter
         if start_date < start_date_filter or end_date > end_date_filter:
-            # if filter by date name is not equal to parsed info
+            # if filter by date is not equal to parsed info
             return
     timedelta = subtract_time(start_date, start_time, end_date, end_time)
     time_delta_str = f"{str(timedelta.seconds//3600)} hours and {(timedelta.seconds//60)%60} minutes"
@@ -75,8 +75,6 @@ class MessageHandler:
         self.full_name_filter = None
         # start date and end date to filter work date of person
         self.dates_filter = None
-        # start dialogue with user
-        self.generate_message()
 
     def generate_message(self):
         """
