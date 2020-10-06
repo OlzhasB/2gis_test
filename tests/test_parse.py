@@ -36,14 +36,14 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Test constructor
         """
-        self.parser = XMLPeopleScheduleParser('xml_files/people.xml', 'person')
+        self.parser = XMLPeopleScheduleParser('data/people.xml', 'person')
         self.elements_list = []
 
     def testPathToFile(self):
         """
         Assert that path to file is set correctly
         """
-        self.assertEqual(self.parser.path_to_file, 'xml_files/people.xml')
+        self.assertEqual(self.parser.path_to_file, 'data/people.xml')
 
     def testTag(self):
         """
@@ -62,7 +62,7 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Assert that file with wrong format returns None
         """
-        self.parser.path_to_file = 'xml_files/wrong.xml'
+        self.parser.path_to_file = 'data/wrong.xml'
 
         result = self.parser.parse_file(do_anything_with_elem, None, None)
         self.assertEqual(result, None)
@@ -71,7 +71,7 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Assert that parsing without filter is correct
         """
-        self.parser.path_to_file = 'xml_files/people.xml'
+        self.parser.path_to_file = 'data/people.xml'
         self.parser.tag = 'person'
         self.parser.parse_file(self.save_elements, None, None)
         expect_list = [
@@ -103,7 +103,7 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Assert that parsing with full name filter is correct
         """
-        self.parser.path_to_file = 'xml_files/people.xml'
+        self.parser.path_to_file = 'data/people.xml'
         self.parser.tag = 'person'
         self.parser.parse_file(self.save_elements, 'i.ivanov', None)
         expect_list = [
@@ -128,7 +128,7 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Assert that parsing with date filter is correct
         """
-        self.parser.path_to_file = 'xml_files/people.xml'
+        self.parser.path_to_file = 'data/people.xml'
         self.parser.tag = 'person'
         dates_filter = (datetime.date(2011, 12, 24), datetime.date(2011, 12, 26))
         self.parser.parse_file(self.save_elements, None, dates_filter)
@@ -147,7 +147,7 @@ class TestXMLPeopleScheduleParser(unittest.TestCase):
         """
         Assert that parsing with full name and dates filters is correct
         """
-        self.parser.path_to_file = 'xml_files/people.xml'
+        self.parser.path_to_file = 'data/people.xml'
         self.parser.tag = 'person'
         dates_filter = (datetime.date(2011, 12, 24), datetime.date(2011, 12, 26))
         self.parser.parse_file(self.save_elements, 'i.ivanov', dates_filter)

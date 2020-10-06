@@ -79,7 +79,6 @@ class MessageHandler:
     def generate_message(self):
         """
         Function to manage Message Handler depending on dialogue state with user
-        :return:
         """
         if self.state == conf.START:
             self.hello_message()
@@ -102,10 +101,19 @@ class MessageHandler:
         :return: input file path of user
         """
         logger.info("Hello, it's a simple script to parse and analyze XML files.")
-        logger.info("Please write path to an XML file")
+        logger.info("Default xml file is people.xml")
+        logger.info("1: Continue")
+        logger.info("*ANY KEY*: Change file")
 
-        # take path to xml file
-        path_to_file = input().strip()
+        answer = input().strip()
+        # continue with default file
+        if answer == '1':
+            path_to_file = 'data/people.xml'
+        # choose another path
+        else:
+            logger.info("Write new directory of xml file")
+            path_to_file = input().strip()
+
         if os.path.exists(path_to_file):
             # if file exists, create parser with path
             self.parser = parse.XMLPeopleScheduleParser(path_to_file, 'person')

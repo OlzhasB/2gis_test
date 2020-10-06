@@ -10,10 +10,10 @@ and removes it after script completion
 docker-compose run --rm console_app
 ```
 
-#### xml_files
+#### data
 ```
 'people.xml' is an xml file with correct format,
-you can write the path to this file 'xml_files/people.xml'
+you can write the path to this file 'data/people.xml'
 in console dialogue with script to parse it
 ```
 
